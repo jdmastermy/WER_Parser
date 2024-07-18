@@ -26,3 +26,9 @@ C:\ProgramData\Microsoft\Windows\WER\ReportQueue
 C:\Users\XXX\AppData\Local\Microsoft\Windows\WER\ReportArchive
 C:\Users\XXX\AppData\Local\Microsoft\Windows\WER\ReportQueue
 ```
+
+# Example of Commands
+Here are the paths that we should take a look at to find these artifacts.
+```
+python3 wer_parser.py C:\ D:\WER\WER_Reports.csv
+```
