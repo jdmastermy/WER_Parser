@@ -1,6 +1,6 @@
 # WER Parser by DFIR Jedi
-# Version 0.1
-# 26/06/2024
+# Version 0.2
+# 18/07/2024
 # python wer_parser.py path_to_your_wer_files_directory output.csv
 
 import csv
@@ -40,7 +40,7 @@ def extract_information(data, file_path):
     application_timestamp = data.get('Sig[2].Value', '')
     if application_timestamp:
         application_timestamp = convert_timestamp(application_timestamp)
-    
+
     application_name = data.get('Sig[0].Value', '')
     application_version = data.get('Sig[1].Value', '')
 
@@ -52,7 +52,6 @@ def extract_information(data, file_path):
         application_version = data.get('AppVersion', '')
 
     information = {
-        'Report Path': file_path,
         'Application Name': application_name,
         'Application Version': application_version,
         'Application Timestamp': application_timestamp,
@@ -69,7 +68,8 @@ def extract_information(data, file_path):
         'Event Time': data.get('EventTime', ''),
         'Report Identifier': data.get('ReportIdentifier', ''),
         'Upload Time': data.get('UploadTime', ''),
-        'Metadata Hash': data.get('MetadataHash', '')
+        'Metadata Hash': data.get('MetadataHash', ''),
+        'Report Path': file_path
     }
     print(f"Extracted information: {information}")  # Debugging statement
     return information
@@ -85,8 +85,7 @@ def write_to_csv(information_list, output_file):
         dict_writer.writeheader()
         dict_writer.writerows(information_list)
 
-def main(input_dir, output_file):
-    information_list = []
+def process_directory(input_dir, information_list):
     for root, _, files in os.walk(input_dir):
         for file in files:
             if file.endswith('.wer'):
@@ -102,18 +101,29 @@ def main(input_dir, output_file):
                 else:
                     print(f"No data found in file: {file_path}")  # Debugging statement
 
+def main(input_dir, output_file):
+    information_list = []
+    process_directory(input_dir, information_list)
+    
+    # Also process user-specific WER folders
+    user_paths = [
+        os.path.expandvars(r"C:\Users\%USERNAME%\AppData\Local\Microsoft\Windows\WER\ReportArchive"),
+        os.path.expandvars(r"C:\Users\%USERNAME%\AppData\Local\Microsoft\Windows\WER\ReportQueue")
+    ]
+
+    for path in user_paths:
+        process_directory(path, information_list)
+
     print(f"Total WER files processed: {len(information_list)}")  # Debugging statement
     write_to_csv(information_list, output_file)
     print(f"CSV file created at: {output_file}")  # Debugging statement
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="Parse WER files and output the extracted information to a CSV file.",
-        epilog="Example usage: python wer_parser.py path_to_your_wer_files_directory output.csv"
-    )
-    parser.add_argument('input_dir', type=str, help="Directory containing WER files")
+    parser = argparse.ArgumentParser(description="Parse WER files and output to CSV.")
+    parser.add_argument('input_dir', type=str, help="Root directory to start searching for WER files")
     parser.add_argument('output_file', type=str, help="Output CSV file")
 
     args = parser.parse_args()
 
     main(args.input_dir, args.output_file)
+
