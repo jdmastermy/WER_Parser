@@ -6,7 +6,7 @@
 import csv
 import os
 import argparse
-from datetime import datetime
+from datetime import datetime, timedelta
 
 def parse_wer_file(file_path):
     data = {}
@@ -36,6 +36,17 @@ def convert_timestamp(timestamp):
         print(f"Error converting timestamp {timestamp}: {e}")
         return timestamp
 
+def convert_event_time(event_time):
+    try:
+        # Convert the Windows file time (100-nanosecond intervals since January 1, 1601) to datetime
+        event_time_int = int(event_time)
+        dt_object = datetime(1601, 1, 1) + timedelta(microseconds=event_time_int // 10)
+        # Format the datetime object to the desired string format
+        return dt_object.strftime('%Y-%d-%m %H:%M:%S')
+    except Exception as e:
+        print(f"Error converting event time {event_time}: {e}")
+        return event_time
+
 def extract_information(data, file_path):
     application_timestamp = data.get('Sig[2].Value', '')
     if application_timestamp:
@@ -51,7 +62,13 @@ def extract_information(data, file_path):
     if not application_version:
         application_version = data.get('AppVersion', '')
 
+    event_time = data.get('EventTime', '')
+    if event_time:
+        event_time = convert_event_time(event_time)
+
     information = {
+        'Event Time (UTC)': event_time,
+        'Event Type': data.get('EventType', ''),
         'Application Name': application_name,
         'Application Version': application_version,
         'Application Timestamp': application_timestamp,
@@ -64,14 +81,12 @@ def extract_information(data, file_path):
         'Locale ID': data.get('DynamicSig[2].Value', ''),
         'App Path': data.get('AppPath', ''),
         'App Name': data.get('AppName', ''),
-        'Event Type': data.get('EventType', ''),
-        'Event Time': data.get('EventTime', ''),
         'Report Identifier': data.get('ReportIdentifier', ''),
         'Upload Time': data.get('UploadTime', ''),
         'Metadata Hash': data.get('MetadataHash', ''),
         'Report Path': file_path
     }
-    print(f"Extracted information: {information}") 
+    print(f"Extracted information: {information}")  # Debugging statement
     return information
 
 def write_to_csv(information_list, output_file):
@@ -90,16 +105,16 @@ def process_directory(input_dir, information_list):
         for file in files:
             if file.endswith('.wer'):
                 file_path = os.path.join(root, file)
-                print(f"Parsing file: {file_path}") 
+                print(f"Parsing file: {file_path}")  # Debugging statement
                 data = parse_wer_file(file_path)
                 if data:
                     information = extract_information(data, file_path)
                     if any(information.values()):  # Check if there is any non-empty value
                         information_list.append(information)
                     else:
-                        print(f"No valid information extracted from file: {file_path}")  
+                        print(f"No valid information extracted from file: {file_path}")  # Debugging statement
                 else:
-                    print(f"No data found in file: {file_path}") 
+                    print(f"No data found in file: {file_path}")  # Debugging statement
 
 def main(input_dir, output_file):
     information_list = []
@@ -114,9 +129,9 @@ def main(input_dir, output_file):
     for path in user_paths:
         process_directory(path, information_list)
 
-    print(f"Total WER files processed: {len(information_list)}") 
+    print(f"Total WER files processed: {len(information_list)}")  # Debugging statement
     write_to_csv(information_list, output_file)
-    print(f"CSV file created at: {output_file}") 
+    print(f"CSV file created at: {output_file}")  # Debugging statement
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Parse WER files and output to CSV.")
@@ -126,4 +141,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     main(args.input_dir, args.output_file)
-
