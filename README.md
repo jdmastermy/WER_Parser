@@ -18,7 +18,7 @@ To see the help message and usage instructions, you can run:
 
 `python wer_parser.py --help`
 
-# WER Path
+# WER Paths
 Here are the paths that we should take a look at to find these artifacts.
 ```
 C:\ProgramData\Microsoft\Windows\WER\ReportArchive
