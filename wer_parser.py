@@ -71,7 +71,7 @@ def extract_information(data, file_path):
         'Metadata Hash': data.get('MetadataHash', ''),
         'Report Path': file_path
     }
-    print(f"Extracted information: {information}")  # Debugging statement
+    print(f"Extracted information: {information}") 
     return information
 
 def write_to_csv(information_list, output_file):
@@ -90,16 +90,16 @@ def process_directory(input_dir, information_list):
         for file in files:
             if file.endswith('.wer'):
                 file_path = os.path.join(root, file)
-                print(f"Parsing file: {file_path}")  # Debugging statement
+                print(f"Parsing file: {file_path}") 
                 data = parse_wer_file(file_path)
                 if data:
                     information = extract_information(data, file_path)
                     if any(information.values()):  # Check if there is any non-empty value
                         information_list.append(information)
                     else:
-                        print(f"No valid information extracted from file: {file_path}")  # Debugging statement
+                        print(f"No valid information extracted from file: {file_path}")  
                 else:
-                    print(f"No data found in file: {file_path}")  # Debugging statement
+                    print(f"No data found in file: {file_path}") 
 
 def main(input_dir, output_file):
     information_list = []
@@ -114,9 +114,9 @@ def main(input_dir, output_file):
     for path in user_paths:
         process_directory(path, information_list)
 
-    print(f"Total WER files processed: {len(information_list)}")  # Debugging statement
+    print(f"Total WER files processed: {len(information_list)}") 
     write_to_csv(information_list, output_file)
-    print(f"CSV file created at: {output_file}")  # Debugging statement
+    print(f"CSV file created at: {output_file}") 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Parse WER files and output to CSV.")
