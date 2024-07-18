@@ -1,5 +1,5 @@
 # Windows Error Reporting (WER) Parser
-A simple script to parse all WER crash reports and save to CSV
+A simple script to parse all WER crash reports and save to CSV. During Incident Response or Digital Forensics examinations, sometimes we need to check WER reports where the malware or suspicious programs maybe crashed during the execution. These WER reports would be helpful to identify the cause of the crash and maybe we can get the timestamp of the execution, MD5 hashes and many more.
 
 ## How to Use
 Instructions to Use the Script:
