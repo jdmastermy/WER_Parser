@@ -42,7 +42,7 @@ def convert_event_time(event_time):
         event_time_int = int(event_time)
         dt_object = datetime(1601, 1, 1) + timedelta(microseconds=event_time_int // 10)
         # Format the datetime object to the desired string format
-        return dt_object.strftime('%Y-%d-%m %H:%M:%S')
+        return dt_object.strftime('%Y-%m-%d %H:%M:%S')
     except Exception as e:
         print(f"Error converting event time {event_time}: {e}")
         return event_time
