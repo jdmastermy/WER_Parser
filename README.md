@@ -9,9 +9,9 @@ Instructions to Use the Script:
 - Navigate to the directory where the script is saved.
 - Run the script using the following command:
 
-   `python wer_parser.py path_to_your_wer_files_directory output.csv`
+   `python wer_parser.py <inputfolder> output.csv`
 
-Replace path_to_your_wer_files_directory with the path to the directory containing your WER files (the script will process files in subdirectories as well), and output.csv with the desired path for the output CSV file.
+Replace <inputfolder> with the path to the directory containing your WER files (the script will process files in subdirectories as well), and output.csv with the desired path for the output CSV file. The most easy way is just to point to your C:\ root folder.
 
 # Help Output
 To see the help message and usage instructions, you can run:
